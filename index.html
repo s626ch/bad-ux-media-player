@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>p,h1,html,body,h3{margin:0;}</style>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="labelContainer">
+        <h3>- Debug info -</h3>
+        <p class="oldlbl">Old mouse position:</p>
+        <h1 id="current">a</h1>
+        <p class="newlbl">New mouse position:</p>
+        <h1 id="old">a</h1>
+    </div>
+    <!-- <audio src="secluded.mp3" id="subjectTest" controls></audio> -->
+    <video src="badapple.mp4" id="subjectTest" controls></video>
+    <script>
+        // https://stackoverflow.com/questions/11903545/how-to-disable-seeking-with-html5-video-tag
+        var video = document.getElementById('subjectTest');
+        var supposedCurrentTime = 0;
+        video.addEventListener('timeupdate', function() {
+        if (!video.seeking) {
+                supposedCurrentTime = video.currentTime;
+            }
+        });
+        // prevent user from seeking
+        video.addEventListener('seeking', function() {
+        // guard against infinite recursion:
+        // user seeks, seeking is fired, currentTime is modified, seeking is fired, current time is modified, ....
+        var delta = video.currentTime - supposedCurrentTime;
+        if (Math.abs(delta) > 0.01) {
+                // console.log("Seeking is disabled");
+                video.currentTime = supposedCurrentTime;
+            }
+        });
+        // delete the following event handler if rewind is not required
+        video.addEventListener('ended', function() {
+            // reset state in order to allow for rewind
+            supposedCurrentTime = 0;
+        });
+    </script>
+    <script>
+    // can't remember where i found this, i know it was a stack overflow post though
+    // i believe this is the sleep function that needs to be async
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+            break;
+            }
+        }
+    }
+    const sleep2 = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+    var pointerX = -1;
+    var pointerY = -1;
+    document.onmousemove = function(event) {
+    	pointerX = event.pageX;
+    	pointerY = event.pageY;
+    }
+    setInterval(pointerCheck, 100);
+    function pointerCheck() {
+        document.getElementById('current').innerHTML = pointerX+', '+pointerY
+            setInterval (() => {
+                    document.getElementById('old').innerHTML = pointerX+', '+pointerY
+                    oldX = pointerX
+                    oldY = pointerY
+            }, 100);
+        // if (pointerX !== oldX || pointerY !== oldY) {
+        //     document.getElementById('subjectTest').play();
+        // }
+        // if (pointerX == oldX || pointerY == oldY) {
+        //     document.getElementById('subjectTest').pause();
+        // }
+        if (oldX !== pointerX || oldY !== pointerY) {
+            document.getElementById('subjectTest').play();
+        }
+        // if (oldX == pointerX || oldY == pointerY) {
+        else {
+            document.getElementById('subjectTest').pause();
+        }
+    }
+    </script>
+</body>
+</html>
